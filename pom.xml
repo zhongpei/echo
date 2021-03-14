@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.virjar.proxy</groupId>
+    <artifactId>echo-proxy</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>echo-proxy-lib</module>
+        <module>echo-nat-server</module>
+        <module>echo-http-proxy-server</module>
+        <module>echo-common</module>
+        <module>echo-meta-server</module>
+        <module>echo-client</module>
+        <module>echo-penetration</module>
+    </modules>
+    <name>Echo-Proxy</name>
+    <description>
+        EchoProxy is a distrubution ip share network penetration system
+    </description>
+    <url>http://echonew.virjar.com/sign-in</url>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

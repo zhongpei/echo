@@ -51,9 +51,8 @@ https://github.com/virjar/echo-android
 
 ## 请允许我打个广告赚点儿钱
 
-代理云ip推广 [http://i0k.cn/5ewVg](http://i0k.cn/5ewVg)
-![代理云ip推广](doc/img/dailiyun_ad_register.jpg)
-
+代理云ip推广 [http://i0k.cn/5ewVg](http://i0k.cn/5ewVg) 
+或扫描下面二维码免费领取ip
 ![扫码领取ip](doc/img/dailiyun_ad_free_proxy.jpg)
 
 

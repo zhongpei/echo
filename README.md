@@ -31,11 +31,24 @@ Echo是一个分布式的代理共享和管理系统，以长链接的方式连�
 
 # 章节目录
 
-1. [软件架构](./1.architecture.md)
-2. [快速上手](./2.quick_start.md)
-3. [PC客户端部署](./3.jvm_installer.md)
-4. [SDK集成](4.sdk.md)
-4. [服务器部署](5.server_deploy.md)
+1. [软件架构](./doc/1.architecture.md)
+2. [快速上手](./doc/2.quick_start.md)
+3. [PC客户端部署](./doc/3.jvm_installer.md)
+4. [SDK集成](./doc/4.sdk.md)
+4. [服务器部署](./doc/5.server_deploy.md)
+
+
+# echo子项目
+
+## echo网站前端系统
+
+https://github.com/virjar/echo-fe
+
+## echoAndroid客户端
+
+https://github.com/virjar/echo-android
+
+
 
 # 社区
 

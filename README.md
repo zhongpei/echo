@@ -49,6 +49,13 @@ https://github.com/virjar/echo-fe
 https://github.com/virjar/echo-android
 
 
+## 请允许我打个广告赚点儿钱
+
+代理云ip推广 [http://i0k.cn/5ewVg](http://i0k.cn/5ewVg)
+![代理云ip推广](doc/img/dailiyun_ad_register.jpg)
+
+![扫码领取ip](doc/img/dailiyun_ad_free_proxy.jpg)
+
 
 # 社区
 

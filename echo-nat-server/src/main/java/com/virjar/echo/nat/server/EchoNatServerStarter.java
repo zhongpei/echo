@@ -74,6 +74,7 @@ public class EchoNatServerStarter {
     private static boolean overWriteWithCommandLine(Properties properties, String[] args) throws ParseException {
         Options options = new Options();
         options.addOption(new Option("", CMD_PORT, true, "the command http server port"));
+        options.addOption(new Option("", SERVER_ID, true, "the server id"));
         options.addOption(new Option("", NAT_PORT, true, "echo nat server port, connected with echo client with echoNatProtocol"));
         options.addOption(new Option("", MAPPING_SPACE, true, "the mapping space is local port space used to bind client channel ," +
                 "the proxy protocol implement(http/https/socks5/udpProxy) will connect this port and forward users network data"));

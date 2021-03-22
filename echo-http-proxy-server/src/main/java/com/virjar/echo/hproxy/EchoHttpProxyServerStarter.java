@@ -76,6 +76,8 @@ public class EchoHttpProxyServerStarter {
     private static boolean overWriteWithCommandLine(Properties properties, String[] args) throws ParseException {
         Options options = new Options();
         options.addOption(new Option("", CMD_PORT, true, "the command http server port"));
+        options.addOption(new Option("", AUTH_CONFIG_URL, true, ""));
+        options.addOption(new Option("", SERVER_ID, true, ""));
         options.addOption(new Option("", MAPPING_SPACE, true, "the mapping space is local port space used to provide http proxy service"));
         options.addOption(new Option("", META_URLS, true, "meta server urls ,we download connection upstream info from meta server"));
         options.addOption(new Option("", API_ENTRY, true, "the meta server api entry,to push some event to meta server"));

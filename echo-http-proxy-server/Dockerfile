@@ -1,6 +1,6 @@
 FROM openjdk:8-alpine
 WORKDIR /app
-COPY ./target/dist-echo-http-proxy-1.1 .
+COPY ./target .
 EXPOSE 32000-33000
 EXPOSE 5699
 EXPOSE 5698

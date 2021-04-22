@@ -1,6 +1,7 @@
 package com.virjar.echo.meta.server.controller;
 
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +11,11 @@ import com.virjar.echo.meta.server.intercept.LoginRequired;
 import com.virjar.echo.meta.server.mapper.NatMappingServerMapper;
 import com.virjar.echo.meta.server.service.MetaResourceService;
 import com.virjar.echo.meta.server.utils.AppContext;
+import com.virjar.echo.meta.server.utils.IPUtils;
+import com.virjar.echo.nat.bootstrap.IOUtils;
+import com.virjar.echo.server.common.SimpleHttpInvoker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -124,6 +130,43 @@ public class NatMappingServerController {
             }
         }
         return ret.toString();
+    }
 
+    @GetMapping("/sendCommandToClient")
+    @LoginRequired(apiToken = true)
+    @ResponseBody
+    public CommonRes<?> sendCommandToClient(String clientId, String action, String additionParam) {
+        List<NatMappingServer> natMappingServers = metaResourceService.allocateNatMappingServerForClient(
+                AppContext.getUser().getUserName() + clientId
+        );
+        if (natMappingServers.isEmpty()) {
+            return CommonRes.failed("no nat server online");
+        }
+        String failedMessage = "failed";
+        for (NatMappingServer natMappingServer : natMappingServers) {
+            String url = IPUtils.genURL(natMappingServer.getApiBaseUrl(), "/echoNatApi/sendCmd");
+
+            //clientId  action additionParam
+            url += "?clientId=" + URLEncoder.encode(clientId) + "&action="
+                    + URLEncoder.encode(action) + "&addition=" + URLEncoder.encode(StringUtils.trimToEmpty(additionParam));
+            try {
+                log.info("sendCommandToClient invoke with url: {}", url);
+                String s = SimpleHttpInvoker.get(url);
+                log.info("response: {}", s);
+                if (StringUtils.isBlank(s)) {
+                    continue;
+                }
+                JSONObject jsonObject = JSONObject.parseObject(s);
+                Integer status = jsonObject.getInteger("status");
+                if (status != null && status == 0) {
+                    return CommonRes.success(jsonObject.get("data"));
+                }
+                failedMessage = jsonObject.getString("msg");
+
+            } catch (JSONException e) {
+                //ignore
+            }
+        }
+        return CommonRes.failed(failedMessage);
     }
 }

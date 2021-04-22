@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.virjar.echo.nat.protocol.EchoPacket;
 import com.virjar.echo.nat.protocol.PacketCommon;
-import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.nat.server.EchoNatServer;
 import com.virjar.echo.nat.server.EchoServerConstant;
+import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.server.common.hserver.NanoUtil;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
@@ -122,8 +122,13 @@ public class EchoRemoteControlManager {
         } else {
             String status = statusAndResponse.substring(0, i);
             String response = statusAndResponse.substring(i + 1);
-            ret.put("data", response);
-            ret.put("status", status);
+            if (StringUtils.equalsIgnoreCase(status, "OK")) {
+                ret.put("status", 0);
+                ret.put("data", response);
+            } else {
+                ret.put("status", -1);
+                ret.put("msg", response);
+            }
         }
         return ret;
     }

@@ -7,6 +7,7 @@ import com.virjar.echo.nat.cmd.AndroidReDialHandler;
 import com.virjar.echo.nat.cmd.CmdHandler;
 import com.virjar.echo.nat.cmd.ShellCmdHandler;
 import com.virjar.echo.nat.log.EchoLogger;
+import io.netty.util.internal.ConcurrentSet;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,6 +65,8 @@ public class EchoBootstrap {
 
     @SuppressWarnings("all")
     private static Map<String, EchoClient> runningEchoClient = new ConcurrentHashMap<>();
+    private static Set<CmdHandler> cmdHandlers = new ConcurrentSet<>();
+
 
     private static void startupEcho(List<String> echoNatServerConfig, String account, boolean sync) {
         for (String config : echoNatServerConfig) {
@@ -98,6 +101,7 @@ public class EchoBootstrap {
     }
 
     public static void registerCmdHandler(CmdHandler cmdHandler) {
+        cmdHandlers.add(cmdHandler);
         for (EchoClient echoClient : runningEchoClient.values()) {
             echoClient.registerCmdHandler(cmdHandler);
         }
@@ -107,6 +111,9 @@ public class EchoBootstrap {
         echoClient.registerCmdHandler(new ShellCmdHandler());
         if (ClientIdentifier.isAndroid) {
             echoClient.registerCmdHandler(new AndroidReDialHandler(getContext()));
+        }
+        for (CmdHandler cmdHandler : cmdHandlers) {
+            echoClient.registerCmdHandler(cmdHandler);
         }
     }
 

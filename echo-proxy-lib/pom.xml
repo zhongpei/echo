@@ -6,7 +6,7 @@
 
     <packaging>jar</packaging>
     <groupId>com.virjar</groupId>
-    <version>1.4</version>
+    <version>1.5</version>
     <artifactId>echo-proxy-lib</artifactId>
 
     <dependencies>

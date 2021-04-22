@@ -44,6 +44,11 @@ public class ConfigPortal {
                 new AndroidReDialHandler(echoNatServer)
         );
 
+        echoHttpCommandServer.registerHandler("/echoNatApi/sendCmd",
+                new SendCommandToClientHandler(echoNatServer)
+        );
+
+
         echoHttpCommandServer.registerHandler(
                 "/echoNatApi/serverId", httpSession -> {
                     JSONObject ret = new JSONObject();

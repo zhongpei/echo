@@ -5,7 +5,7 @@ cd `dirname $0`
 
 shell_dir=`pwd`
 cd ..
-cd echo-lib/
+cd echo-proxy-lib/
 mvn -Pint -Dmaven.test.skip=true clean install
 
 cd ..

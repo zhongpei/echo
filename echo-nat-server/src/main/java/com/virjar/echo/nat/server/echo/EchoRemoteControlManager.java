@@ -9,6 +9,8 @@ import com.virjar.echo.nat.server.EchoServerConstant;
 import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.server.common.hserver.NanoUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
@@ -55,12 +57,18 @@ public class EchoRemoteControlManager {
     }
 
     public JSONObject sendRemoteControlMessage(String clientId, String controlAction, String additionParam) {
+
+        log.info("sendRemoteControlMessage clientId:{} controlAction:{} additionParam:{}", clientId, controlAction, additionParam);
         EchoTuningExtra echoTuningExtra = echoNatServer.queryConnectionNode(clientId);
         if (echoTuningExtra == null) {
+            log.info("client offline");
             return NanoUtil.failed(-1, "client offline");
         }
         Channel echoNatChannel = echoTuningExtra.getEchoNatChannel();
-
+        if (!echoNatChannel.isActive()) {
+            log.info("client offline");
+            return NanoUtil.failed(-1, "client offline");
+        }
         Long seq = echoTuningExtra.nextSeq();
 
         EchoPacket echoPacket = new EchoPacket();
@@ -70,7 +78,18 @@ public class EchoRemoteControlManager {
             echoPacket.setData(additionParam.getBytes(StandardCharsets.UTF_8));
         }
         echoPacket.setSerialNumber(seq);
-        echoNatChannel.writeAndFlush(echoPacket);
+        echoNatChannel.writeAndFlush(echoPacket).addListener((ChannelFutureListener) channelFuture -> {
+            if (!channelFuture.isSuccess()) {
+                Map<Long, DefaultPromise<EchoPacket>> promiseMap = echoNatChannel.attr(resultPromise).get();
+                DefaultPromise<EchoPacket> future = promiseMap.remove(echoPacket.getSerialNumber());
+                if (future != null) {
+                    future.setFailure(channelFuture.cause());
+                } else {
+                    log.error("can not get invoke record:{}", seq);
+                }
+
+            }
+        });
 
 
         Map<Long, DefaultPromise<EchoPacket>> promiseMap = echoNatChannel.attr(resultPromise).get();

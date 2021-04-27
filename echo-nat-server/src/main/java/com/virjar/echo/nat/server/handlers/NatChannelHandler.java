@@ -36,6 +36,11 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+    }
+
+    @Override
     protected void channelRead0(ChannelHandlerContext ctx, EchoPacket msg) {
 
 
@@ -117,7 +122,7 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
             log.error("no client bound for channel:{}", ctx.channel());
             return;
         }
-        log.info("receive heartbeat message from client:{}", clientId);
+        log.info("receive heartbeat message from client:{} for channel:{}", clientId, ctx.channel());
     }
 
     private void onLoseConnect(EchoTuningExtra echoTuningExtra) {
@@ -156,7 +161,7 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
         final Integer port = echoNatServer.getPortResourceManager().allocate();
 
         if (port == null) {
-            log.error("no available port resource for http proxy");
+            log.error("no available port resource for http proxy ,now clientId is:{}", clientId);
 
             //等一会儿再关闭，避免客户端一直重连
             ctx.executor().schedule((Runnable) ctx::close, 40, TimeUnit.SECONDS);
@@ -196,6 +201,8 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
         log.info("mapping service open successfully:{}", echoTuningExtra);
         ChannelStateManager.onEchoProxyEstablish(echoTuningExtra);
         echoNatServer.registerConnectionInfo(echoTuningExtra);
+
+        NettyUtils.loveOther(mappingServerChannel, echoNatChannel);
 
         mappingServerChannel.closeFuture().addListener(
                 (ChannelFutureListener) channelFuture -> onLoseConnect(echoTuningExtra)

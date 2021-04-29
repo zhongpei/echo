@@ -6,4 +6,4 @@ EXPOSE 5699
 EXPOSE 5698
 ENV API_ENTRY="http://echonew.virjar.com/"
 ENV SERVER_ID="echo-nat-001"
-ENTRYPOINT [ "/app/bin/EchoNatServer.sh","--api-entry","$API_ENTRY"]
+ENTRYPOINT "/app/bin/EchoNatServer.sh" "--api-entry" "${API_ENTRY}" "--server-id" "${SERVER_ID}"

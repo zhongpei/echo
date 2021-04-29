@@ -1,16 +1,16 @@
 version: '3'
 services:
-  mysql:
-    image: mysql:5.7
-    container_name: echo-mysql
-    ports:
-      - 3309:3306
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/echo_db_create.sql:/docker-entrypoint-initdb.d/echo_db_create.sql
-    environment:
-      MYSQL_ROOT_PASSWORD: "echo"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+#   echo-mysql:
+#     image: mysql:5.7
+#     container_name: echo-mysql
+#     ports:
+#       - 4444:3306
+#     volumes:
+#       - ./mysql/data:/var/lib/mysql
+#       - ./mysql/echo_db_create.sql:/docker-entrypoint-initdb.d/echo_db_create.sql
+#     environment:
+#       MYSQL_ROOT_PASSWORD: "echo"
+#     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
   echo-meta-server:
     build: ./echo-meta-server
     image: echo-meta-server:20210321
@@ -18,11 +18,11 @@ services:
     ports:
       - 4826:4826
     environment:
-      ECHO_MYSQL_USER: root
-      ECHO_MYSQL_PASSWORD: echo
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/echo?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&autoConnect=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: echo
+      SPRING_DATASOURCE_URL: jdbc:mysql://192.168.50.104:4406/echo?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&autoConnect=true
     # depends_on: 
-    # - mysql
+    #   - echo-mysql
   echo-fe-ui:
     image: liguobao/echo-fe
     container_name: echo-fe-ui

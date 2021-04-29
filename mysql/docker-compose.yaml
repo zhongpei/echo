@@ -4,7 +4,7 @@ services:
     image: mysql:5.7
     container_name: echo-mysql
     ports:
-      - 3309:3306
+      - 4406:3306
     volumes:
       - ./data:/var/lib/mysql
       - ./echo_db_create.sql:/docker-entrypoint-initdb.d/echo_db_create.sql

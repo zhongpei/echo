@@ -25,6 +25,7 @@ public class EchoNatServerStarter {
     public static final String DEFAULT_MAPPING_SPACE = "20000-25000";
     public static final String DEFAULT_LOCAL_HOST = "127.0.0.1";
     private static final String DEFAULT_API_ENTRY = "http://echonew.virjar.com/";
+    private static final String DEFAULT_SERVER_ID = "server-id-001";
 
     private static final String SERVER_ID = "server-id";
 
@@ -58,6 +59,7 @@ public class EchoNatServerStarter {
         fillInDefaultItem(properties, MAPPING_SPACE, DEFAULT_MAPPING_SPACE);
         fillInDefaultItem(properties, LOCAL_HOST, DEFAULT_LOCAL_HOST);
         fillInDefaultItem(properties, API_ENTRY, DEFAULT_API_ENTRY);
+        fillInDefaultItem(properties, SERVER_ID, DEFAULT_SERVER_ID);
     }
 
     private static void fillInDefaultItem(Properties properties, String key, String defaultValue) {
@@ -96,6 +98,7 @@ public class EchoNatServerStarter {
         syncCmdItem(properties, cmd, MAPPING_SPACE);
         syncCmdItem(properties, cmd, LOCAL_HOST);
         syncCmdItem(properties, cmd, API_ENTRY);
+        syncCmdItem(properties, cmd, SERVER_ID);
 
         return false;
     }

@@ -115,9 +115,11 @@ public class MappingChannelHandler extends SimpleChannelInboundHandler<Object> {
             ChannelStateManager.userConnectionDisconnect(ctx.channel());
         } else if (mappingChannelType == MAPPING_CHANNEL_TYPE_HEATH_CHECK) {
             //如果是healthCheck的连接断开，那么销毁这个代理资源
-            log.info("lost connection for healthCheck,shutdown mapping service:{}",
+            log.info("lost connection for healthCheck for client:{}",
                     ChannelStateManager.getClientId(ctx.channel()));
-            ctx.channel().parent().close();
+            // 这搞错了，不应该因为mapping healthCheck 掉线就关闭服务。
+            // healthCheck的判定是在用户端
+//            ctx.channel().parent().close();
         }
     }
 

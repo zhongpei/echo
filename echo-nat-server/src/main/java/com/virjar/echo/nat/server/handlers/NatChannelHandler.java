@@ -7,6 +7,7 @@ import com.virjar.echo.nat.protocol.EchoPacketDecoder;
 import com.virjar.echo.nat.protocol.EchoPacketEncoder;
 import com.virjar.echo.nat.protocol.PacketCommon;
 import com.virjar.echo.nat.server.ChannelStateManager;
+import com.virjar.echo.nat.server.EchoServerConstant;
 import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.nat.server.EchoNatServer;
 import com.virjar.echo.server.common.NettyUtils;
@@ -42,8 +43,8 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, EchoPacket msg) {
-
-
+        String clientId = ChannelStateManager.getClientId(ctx.channel());
+        log.info("receive message :{} from channel:{} clientId:{}", PacketCommon.getReadableType(msg.getType()), ctx.channel(), clientId);
         switch (msg.getType()) {
             case PacketCommon.C_TYPE_REGISTER:
                 handleRegister(ctx, msg);

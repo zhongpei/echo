@@ -1,6 +1,7 @@
 FROM openjdk:8-alpine
 WORKDIR /app
 COPY ./target/dist-echo-http-proxy-1.1 .
+COPY ./src/main/resources-env/dev/log4j.xml /app/conf/
 EXPOSE 33001-34000
 EXPOSE 5710
 ENV API_ENTRY="http://echonew.virjar.com/"

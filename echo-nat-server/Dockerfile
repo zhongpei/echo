@@ -1,6 +1,7 @@
 FROM openjdk:8-alpine
 WORKDIR /app
 COPY ./target/dist-echo-nat-1.1 .
+COPY ./src/main/resources-env/dev/log4j.xml /app/conf/
 EXPOSE 20000-21000
 EXPOSE 5699
 EXPOSE 5698

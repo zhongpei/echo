@@ -1,6 +1,7 @@
 FROM openjdk:8-alpine
 WORKDIR /app
 COPY ./target/dist-echo-client-1.1 .
+COPY ./src/main/resources-env/dev/log4j.xml /app/conf/
 ENV API_ENTRY="http://echonew.virjar.com/"
 ENV CLIENT_ID="client-id-001"
 ENV ECHO_ACCOUNT="10086"

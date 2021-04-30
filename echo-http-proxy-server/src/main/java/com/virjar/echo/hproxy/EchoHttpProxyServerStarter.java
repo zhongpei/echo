@@ -93,7 +93,7 @@ public class EchoHttpProxyServerStarter {
             return true;
         }
 
-        Lists.newArrayList(CMD_PORT, META_URLS, API_ENTRY, MAPPING_SPACE, DEBUG)
+        Lists.newArrayList(CMD_PORT, META_URLS, API_ENTRY, MAPPING_SPACE, DEBUG, AUTH_CONFIG_URL, SERVER_ID)
                 .forEach(key -> syncCmdItem(properties, cmd, key));
         return false;
     }

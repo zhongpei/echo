@@ -23,3 +23,6 @@ echo-client-1.0.zip
 echo-temp-logs/
 echo-release.zip
 mysql/data
+*.factorypath
+*/.gradle/*
+*/.vscode/*

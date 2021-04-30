@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+ 
+    <!-- 如果使用公司仓库,发snapshot,同时在公司外部环境build,那么将会无法获取最新的snapshot。但是公司仓库默认配置强刷,此时将会build失败,开启offline参数即可关闭强刷 -->
+    <offline>false</offline>
+    <mirrors>
+        <!-- 所有中央仓库的请求,交给阿里云仓库转发, -->
+        <mirror>
+            <id>aliyun</id>
+            <name>aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
+    <pluginGroups>
+        <!-- 启用tomcat插件,可以使用mvn tomcat:run 启动任何一个java  web项目,即使在web中没有配置tomcat plugin -->
+        <pluginGroup>org.apache.tomcat.maven</pluginGroup>
+    </pluginGroups>
+    <profiles>
+ 
+        <profile>
+            <!-- 默认的策略 -->
+            <id>defaultConfig</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- tomcat插件默认参数 -->
+                <org.apache.tomcat.maven.tomcat7.maven.port>8099</org.apache.tomcat.maven.tomcat7.maven.port>
+                <!--  默认编译参数 -->
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <maven.compiler.encoding>UTF8</maven.compiler.encoding>
+                <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+                <!-- 如果通过maven初始化新项目，那么使用本地的骨架描述文件，该文件位于~/.m2/archetype-catalog.xml ,
+                下载地址为：http://maven.apache.org/archetype/maven-archetype-plugin/specification/archetype-catalog.html
+                 使用本地骨架文件可以显著提高速度,否则每次都要去国外下载一个十几M的大文件
+                 -->
+                <archetypeCatalog>local</archetypeCatalog>
+ 
+            </properties>
+            <repositories>
+ 
+                <!-- 阿里云仓库,可以在公司外部环境使用,首先使用阿里云, -->
+                <repository>
+                    <id>aliyun</id>
+                    <url>https://maven.aliyun.com/repository/public/</url>
+                    <name>aliyun</name>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>int</id>
+            <repositories>
+                <repository>
+                    <id>int-public</id>
+                    <name>int public maven</name>
+                    <url>http://nexus.virjar.com/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+ 
+    </profiles>
+</settings>

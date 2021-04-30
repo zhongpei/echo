@@ -19,5 +19,9 @@ docker run --rm --name echo-http-proxy-server -e API_ENTRY=http://192.168.50.104
 
 docker run --rm -e API_ENTRY=http://192.168.50.104:4826 -e CLIENT_ID=client-001 -e ECHO_ACCOUNT=admin -e ECHO_PASSWORD=admin registry.cn-beijing.aliyuncs.com/virjar/echo-client:20210430
 
- ./EchoClient.sh --api-entry http://192.168.50.104:4826/ --echo-account admin --echo-password admin 
+./EchoNatServer.sh --api-entry http://192.168.50.104:4826 --server-id nat1 --mapping-space 10000-10010
+
+./EchoHttpServer.sh --mapping-server-url http://192.168.50.104:4826/echoNatApi/connectionList --auth-config-url http://192.168.50.104:4826/echoNatApi/syncAuthConfig --api-entry http://192.168.50.104:4826/ --mapping-space 10010-10020
+
+./EchoClient.sh --api-entry http://192.168.50.104:4826/ --echo-account admin --echo-password admin 
 ```

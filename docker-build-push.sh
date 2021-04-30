@@ -14,7 +14,7 @@ mkdir echo-dist
 cd ${shell_dir}
 ./echo-client/generate-bin.sh
 docker build ./echo-client -t registry.cn-beijing.aliyuncs.com/virjar/echo-client
-docker push registry.cn-beijing.aliyuncs.com/virjar/echo-client
+# docker push registry.cn-beijing.aliyuncs.com/virjar/echo-client
 echo_client_version=`cat ./echo-client/target/echo_client_version.txt`
 cp ./echo-client/target/echo-client-${echo_client_version}.zip echo-dist/
 
@@ -23,7 +23,7 @@ cp ./echo-client/target/echo-client-${echo_client_version}.zip echo-dist/
 cd ${shell_dir}
 ./echo-http-proxy-server/generate-bin.sh
 docker build ./echo-http-proxy-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-http-proxy-server
-docker push registry.cn-beijing.aliyuncs.com/virjar/echo-http-proxy-server
+# docker push registry.cn-beijing.aliyuncs.com/virjar/echo-http-proxy-server
 echo_http_proxy_version=`cat ./echo-http-proxy-server/target/echo_http_proxy_version.txt`
 cp ./echo-http-proxy-server/target/echo-http-proxy-${echo_http_proxy_version}.zip echo-dist/
 
@@ -32,13 +32,13 @@ cp ./echo-http-proxy-server/target/echo-http-proxy-${echo_http_proxy_version}.zi
 cd ${shell_dir}
 ./echo-nat-server/generate-bin.sh
 docker build ./echo-nat-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-nat-server
-docker push registry.cn-beijing.aliyuncs.com/virjar/echo-nat-server
+#docker push registry.cn-beijing.aliyuncs.com/virjar/echo-nat-server
 echo_nat_version=`cat ./echo-nat-server/target/echo_nat_version.txt`
 cp ./echo-nat-server/target/dist-echo-nat-${echo_nat_version}.zip echo-dist/
 
 # meta-server
 docker build ./echo-meta-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
-docker push registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
+#docker push registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
 
 # build information
 cd ${shell_dir}
@@ -56,8 +56,4 @@ zip -r echo-release.zip ./*
 mv echo-release.zip ../
 cd ${shell_dir}
 rm -rf echo-dist/
-
-
-
-
-
+docker images |grep "registry.cn-beijing.aliyuncs.com/virjar"

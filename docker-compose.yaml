@@ -6,7 +6,7 @@ services:
     ports:
       - 4444:3306
     volumes:
-      - ~/docker-data/mysql/data:/var/lib/mysql
+      - ./mysql/data:/var/lib/mysql
       - ./mysql/echo_db_create.sql:/docker-entrypoint-initdb.d/echo_db_create.sql
     environment:
       MYSQL_ROOT_PASSWORD: "echo"

@@ -139,6 +139,24 @@
         </profile>
 
         <profile>
+            <id>docker</id>
+            <properties>
+                <env>docker</env>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources-env/docker</directory>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                </resources>
+
+            </build>
+        </profile>
+
+        <profile>
             <id>prod</id>
             <properties>
                 <env>prod</env>

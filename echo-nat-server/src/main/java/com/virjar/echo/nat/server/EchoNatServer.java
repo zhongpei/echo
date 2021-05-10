@@ -142,14 +142,14 @@ public class EchoNatServer {
         }
         EchoTuningExtra remove = connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());
         log.info("unregisterConnectionInfo successfully,clientId:", echoTuningExtra.getClientId());
-        // 使用looper之后，这里貌似可以放心remove
-        if (remove != null) {
-            if (!remove.getEchoNatChannel().equals(echoTuningExtra.getEchoNatChannel())
-                    && remove.getMappingServerChannel().isActive()) {
-                // 极短时间内，又注册上来了。此时取消remove
-                connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
-            }
-        }
+//        // 使用looper之后，这里貌似可以放心remove
+//        if (remove != null) {
+//            if (!remove.getEchoNatChannel().equals(echoTuningExtra.getEchoNatChannel())
+//                    && remove.getMappingServerChannel().isActive()) {
+//                // 极短时间内，又注册上来了。此时取消remove
+//                connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
+//            }
+//        }
     }
 
     public void generateConnectionInfoV2(ValueCallback<JSONObject> valueCallback) {

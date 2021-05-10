@@ -37,6 +37,8 @@ echo_nat_version=`cat ./echo-nat-server/target/echo_nat_version.txt`
 cp ./echo-nat-server/target/dist-echo-nat-${echo_nat_version}.zip echo-dist/
 
 # meta-server
+cd ${shell_dir}
+./echo-meta-server/generate-bin.sh
 docker build ./echo-meta-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
 #docker push registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
 

@@ -34,7 +34,8 @@ public class EventBusController {
         JSONArray events = jsonObject.getJSONArray("events");
 
         for (int i = 0; i < events.size(); i++) {
-            ComponentEvent componentEvent = events.getJSONObject(i).toJavaObject(ComponentEvent.class);
+            String componentEventText = events.getString(i);
+            ComponentEvent componentEvent = JSONObject.parseObject(componentEventText, ComponentEvent.class);
             eventBusService.receiveEvent(remoteAddr, componentEvent);
         }
         return CommonRes.success("ok");

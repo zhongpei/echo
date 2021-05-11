@@ -9,11 +9,9 @@ import com.virjar.echo.server.common.hserver.HttpActionHandler;
 import com.virjar.echo.server.common.hserver.NanoUtil;
 import fi.iki.elonen.NanoHTTPD;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -99,9 +97,11 @@ public class EventBusManager {
             if (eventHandlers.isEmpty()) {
                 return NanoUtil.success("no handler");
             }
-            try (InputStream inputStream = httpSession.getInputStream()) {
-                String jsonContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-                ComponentEvent componentEvent = JSONObject.parseObject(jsonContent).toJavaObject(ComponentEvent.class);
+            try {
+                final HashMap<String, String> httpDataMap = new HashMap<String, String>();
+                httpSession.parseBody(httpDataMap);
+                String jsonContentText = httpDataMap.get("postData");
+                ComponentEvent componentEvent = JSONObject.parseObject(jsonContentText).toJavaObject(ComponentEvent.class);
                 for (EventHandler eventHandler : eventHandlers) {
                     eventHandler.handleEvent(componentEvent);
                 }

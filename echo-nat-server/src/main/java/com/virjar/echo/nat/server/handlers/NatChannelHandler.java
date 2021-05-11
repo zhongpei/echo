@@ -7,8 +7,6 @@ import com.virjar.echo.nat.protocol.EchoPacketDecoder;
 import com.virjar.echo.nat.protocol.EchoPacketEncoder;
 import com.virjar.echo.nat.protocol.PacketCommon;
 import com.virjar.echo.nat.server.ChannelStateManager;
-import com.virjar.echo.nat.server.EchoServerConstant;
-import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.nat.server.EchoNatServer;
 import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.server.common.NettyUtils;
@@ -129,10 +127,18 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
     private void onLoseConnect(EchoTuningExtra echoTuningExtra) {
         log.info("mapping service shutdown:{}", echoTuningExtra);
+        if (echoTuningExtra.getEchoNatChannel().isActive() && echoTuningExtra.getMappingServerChannel().isActive()) {
+            log.info("natChannel isActive,clientId:{}", echoTuningExtra.getClientId());
+            return;
+        }
+        if (echoNatServer.unregisterConnectionInfoV2(echoTuningExtra) == false) {
+            log.info("unregisterConnectionInfoV2 fail,{},skip it.", echoTuningExtra.getClientId());
+            return;
+        }
         NettyUtils.closeChannelIfActive(echoTuningExtra.getEchoNatChannel());
         NettyUtils.closeChannelIfActive(echoTuningExtra.getMappingServerChannel());
         echoNatServer.getPortResourceManager().returnPort(echoTuningExtra.getPort());
-        echoNatServer.unregisterConnectionInfoV2(echoTuningExtra);
+
 
         //所有的代理服务端到NatMapping端的连接
         NettyUtils.closeAll(ChannelStateManager.connectedDownStreams(echoTuningExtra.getMappingServerChannel()));

@@ -30,7 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -135,14 +137,43 @@ public class EchoNatServer {
         connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
     }
 
-    public void unregisterConnectionInfoV2(EchoTuningExtra echoTuningExtra) {
+    public boolean unregisterConnectionInfoV2(EchoTuningExtra echoTuningExtra) {
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<Boolean>();
+        this.unregisterConnectionInfo(echoTuningExtra, value -> {
+            completableFuture.complete(value);
+        });
+        try {
+            Boolean result = completableFuture.get();
+            return result;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public void unregisterConnectionInfo(
+            EchoTuningExtra echoTuningExtra,
+            ValueCallback<Boolean> valueCallback) {
         if (!looper.inLooper()) {
-            looper.post(() -> unregisterConnectionInfoV2(echoTuningExtra));
+            looper.post(() -> unregisterConnectionInfo(echoTuningExtra, valueCallback));
             return;
         }
-        EchoTuningExtra remove = connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());
-        log.info("unregisterConnectionInfo successfully,clientId:", echoTuningExtra.getClientId());
-//        // 使用looper之后，这里貌似可以放心remove
+        EchoTuningExtra remove = connectionAdditionInfoMap.get(echoTuningExtra.getClientId());
+        if (remove.getEchoNatChannel() != echoTuningExtra.getEchoNatChannel()
+                || remove.getMappingServerChannel() != echoTuningExtra.getMappingServerChannel()) {
+            valueCallback.onReceiveValue(false);
+            log.info("unregisterConnectionInfo ignore,echoTuningExtra natChannel is alive");
+            return;
+        }
+        connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());
+        log.info("unregisterConnectionInfo successfully,clientId:{}", echoTuningExtra.getClientId());
+        valueCallback.onReceiveValue(true);
+        return;
+
+
+        // 使用looper之后，这里貌似可以放心remove
 //        if (remove != null) {
 //            if (!remove.getEchoNatChannel().equals(echoTuningExtra.getEchoNatChannel())
 //                    && remove.getMappingServerChannel().isActive()) {

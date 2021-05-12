@@ -127,12 +127,8 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
     private void onLoseConnect(EchoTuningExtra echoTuningExtra) {
         log.info("mapping service shutdown:{}", echoTuningExtra);
-        if (echoTuningExtra.getEchoNatChannel().isActive() && echoTuningExtra.getMappingServerChannel().isActive()) {
-            log.info("natChannel isActive,clientId:{}", echoTuningExtra.getClientId());
-            return;
-        }
         if (echoNatServer.unregisterConnectionInfoV2(echoTuningExtra) == false) {
-            log.info("unregisterConnectionInfoV2 fail,{},skip it.", echoTuningExtra.getClientId());
+            log.info("unregisterConnectionInfoV2 fail,{},skip it.", echoTuningExtra);
             return;
         }
         NettyUtils.closeChannelIfActive(echoTuningExtra.getEchoNatChannel());

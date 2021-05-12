@@ -3,9 +3,11 @@ package com.virjar.echo.hproxy;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import com.virjar.echo.server.common.upstream.ProxyNode;
 import com.virjar.echo.hproxy.portal.PortalServer;
-import com.virjar.echo.hproxy.service.*;
+import com.virjar.echo.hproxy.service.AuthConfigManager;
+import com.virjar.echo.hproxy.service.HttpProxyService;
+import com.virjar.echo.hproxy.service.ProxyPortAllocator;
+import com.virjar.echo.hproxy.service.UpStreamResourceLoadManager;
 import com.virjar.echo.server.common.NatUpstreamMeta;
 import com.virjar.echo.server.common.NettyUtils;
 import com.virjar.echo.server.common.auth.BasicAuthenticator;
@@ -14,6 +16,7 @@ import com.virjar.echo.server.common.auth.NoneAuthenticator;
 import com.virjar.echo.server.common.eventbus.ComponentEvent;
 import com.virjar.echo.server.common.eventbus.EventBusManager;
 import com.virjar.echo.server.common.upstream.NatMappingUpstreamService;
+import com.virjar.echo.server.common.upstream.ProxyNode;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.Builder;
@@ -171,8 +174,13 @@ public class EchoHttpProxyServer {
         String clientId = natUpstreamMeta.getClientId();
         ProxyNode proxyNode = allProxyNode.get(clientId);
         if (proxyNode != null) {
-            log.info("client: {} online already", clientId);
-            return null;
+            if (proxyNode.getNatUpstreamMeta().getPort() == natUpstreamMeta.getPort()) {
+                log.info("client: {} online already,proxyNode:{}", proxyNode.getClientId(), proxyNode);
+                return null;
+            } else {
+                log.info("originPoxyNode not active, disconnect it,proxyNode:{}", proxyNode);
+                onProxyNodeDisconnect(proxyNode);
+            }
         }
         proxyNode = new ProxyNode();
         proxyNode.setClientId(clientId);

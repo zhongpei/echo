@@ -6,12 +6,14 @@ import com.google.common.base.Preconditions;
 import com.virjar.echo.nat.protocol.EchoPacketDecoder;
 import com.virjar.echo.nat.protocol.EchoPacketEncoder;
 import com.virjar.echo.nat.server.echo.EchoRemoteControlManager;
-import com.virjar.echo.nat.server.handlers.NatChannelHandler;
 import com.virjar.echo.nat.server.echo.PortResourceManager;
-import com.virjar.echo.nat.server.handlers.ServerIdleCheckHandler;
 import com.virjar.echo.nat.server.handlers.MappingChannelHandler;
+import com.virjar.echo.nat.server.handlers.NatChannelHandler;
+import com.virjar.echo.nat.server.handlers.ServerIdleCheckHandler;
 import com.virjar.echo.nat.server.portal.ConfigPortal;
 import com.virjar.echo.server.common.eventbus.EventBusManager;
+import com.virjar.echo.server.common.safethread.Looper;
+import com.virjar.echo.server.common.safethread.ValueCallback;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -28,7 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -85,19 +89,23 @@ public class EchoNatServer {
 
     private final Object connectionAdditionInfoMapOpLock = new Object();
 
+    @Getter
+    private Looper looper;
+
+    @Deprecated
     public void registerConnectionInfo(EchoTuningExtra echoTuningExtra) {
         synchronized (connectionAdditionInfoMapOpLock) {
             connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
         }
     }
 
+    @Deprecated
     public void unregisterConnectionInfo(EchoTuningExtra echoTuningExtra) {
         synchronized (connectionAdditionInfoMapOpLock) {
             EchoTuningExtra remove = connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());
             if (remove != null) {
                 if (!remove.getEchoNatChannel().equals(echoTuningExtra.getEchoNatChannel())
-                        && remove.getMappingServerChannel().isActive()
-                ) {
+                        && remove.getMappingServerChannel().isActive()) {
                     // 极短时间内，又注册上来了。此时取消remove
                     connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
                 }
@@ -105,6 +113,7 @@ public class EchoNatServer {
         }
     }
 
+    @Deprecated
     public JSONObject generateConnectionInfo() {
         JSONObject ret = new JSONObject();
         JSONArray jsonArray = new JSONArray(connectionAdditionInfoMap.size());
@@ -115,8 +124,87 @@ public class EchoNatServer {
         return ret;
     }
 
+    @Deprecated
     public EchoTuningExtra queryConnectionNode(String clientId) {
         return connectionAdditionInfoMap.get(clientId);
+    }
+
+    public void registerConnectionInfoV2(EchoTuningExtra echoTuningExtra) {
+        if (!looper.inLooper()) {
+            looper.post(() -> registerConnectionInfoV2(echoTuningExtra));
+            return;
+        }
+        connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
+    }
+
+    public boolean unregisterConnectionInfoV2(EchoTuningExtra echoTuningExtra) {
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<Boolean>();
+        this.unregisterConnectionInfo(echoTuningExtra, value -> {
+            completableFuture.complete(value);
+        });
+        try {
+            Boolean result = completableFuture.get();
+            return result;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public void unregisterConnectionInfo(
+            EchoTuningExtra echoTuningExtra,
+            ValueCallback<Boolean> valueCallback) {
+        if (!looper.inLooper()) {
+            looper.post(() -> unregisterConnectionInfo(echoTuningExtra, valueCallback));
+            return;
+        }
+        EchoTuningExtra remove = connectionAdditionInfoMap.get(echoTuningExtra.getClientId());
+        if (remove.getEchoNatChannel() != echoTuningExtra.getEchoNatChannel()
+                || remove.getMappingServerChannel() != echoTuningExtra.getMappingServerChannel()) {
+            valueCallback.onReceiveValue(false);
+            log.info("unregisterConnectionInfo ignore,echoTuningExtra natChannel is alive,echoTuningExtra:{}",echoTuningExtra);
+            return;
+        }
+        connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());
+        log.info("unregisterConnectionInfo successfully,echoTuningExtra:{}", echoTuningExtra);
+        valueCallback.onReceiveValue(true);
+        return;
+
+
+        // 使用looper之后，这里貌似可以放心remove
+//        if (remove != null) {
+//            if (!remove.getEchoNatChannel().equals(echoTuningExtra.getEchoNatChannel())
+//                    && remove.getMappingServerChannel().isActive()) {
+//                // 极短时间内，又注册上来了。此时取消remove
+//                connectionAdditionInfoMap.put(echoTuningExtra.getClientId(), echoTuningExtra);
+//            }
+//        }
+    }
+
+    public void generateConnectionInfoV2(ValueCallback<JSONObject> valueCallback) {
+        if (!looper.inLooper()) {
+            looper.post(() -> generateConnectionInfoV2(valueCallback));
+            return;
+        }
+        JSONObject ret = new JSONObject();
+        JSONArray jsonArray = new JSONArray(connectionAdditionInfoMap.size());
+        ret.put("clients", jsonArray);
+        for (EchoTuningExtra echoTuningExtra : connectionAdditionInfoMap.values()) {
+            jsonArray.add(echoTuningExtra.toVo());
+        }
+        valueCallback.onReceiveValue(ret);
+        return;
+    }
+
+    public void queryConnectionNodeV2(String clientId, ValueCallback<EchoTuningExtra> valueCallback) {
+        if (!looper.inLooper()) {
+            looper.post(() -> queryConnectionNodeV2(clientId, valueCallback));
+            return;
+        }
+        EchoTuningExtra echoTuningExtra = connectionAdditionInfoMap.get(clientId);
+        valueCallback.onReceiveValue(echoTuningExtra);
     }
 
     public void startUp() {
@@ -145,75 +233,92 @@ public class EchoNatServer {
             throw new IllegalStateException("serverId can not be empty!!");
         }
 
+        this.looper = new Looper(this.getServerId());
+        log.error("looper init successfully");
 
         // second startup NatServer
         ServerBootstrap natServerBootStrap = new ServerBootstrap();
-        NioEventLoopGroup serverBossGroup = new NioEventLoopGroup(
-                0,
-                new DefaultThreadFactory("NatServer-boss-group" + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class))
-        );
-        NioEventLoopGroup serverWorkerGroup = new NioEventLoopGroup(
-                0,
-                new DefaultThreadFactory("NatServer-worker-group" + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class))
-        );
-        natServerBootStrap.group(serverBossGroup, serverWorkerGroup)
+        NioEventLoopGroup serverBossGroup =
+                new NioEventLoopGroup(
+                        0,
+                        new DefaultThreadFactory(
+                                "NatServer-boss-group" + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class)));
+        NioEventLoopGroup serverWorkerGroup =
+                new NioEventLoopGroup(
+                        0,
+                        new DefaultThreadFactory(
+                                "NatServer-worker-group"
+                                        + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class)));
+        natServerBootStrap
+                .group(serverBossGroup, serverWorkerGroup)
                 .option(ChannelOption.SO_BACKLOG, 10)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(new EchoPacketDecoder());
-                        ch.pipeline().addLast(new EchoPacketEncoder());
-                        ch.pipeline().addLast(new ServerIdleCheckHandler());
-                        ch.pipeline().addLast(new NatChannelHandler(EchoNatServer.this));
+                .childHandler(
+                        new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            public void initChannel(SocketChannel ch) {
+                                ch.pipeline().addLast(new EchoPacketDecoder());
+                                ch.pipeline().addLast(new EchoPacketEncoder());
+                                ch.pipeline().addLast(new ServerIdleCheckHandler());
+                                ch.pipeline().addLast(new NatChannelHandler(EchoNatServer.this));
+                            }
+                        });
+        natServerBootStrap
+                .bind(natPort)
+                .addListener(
+                        new GenericFutureListener<Future<? super Void>>() {
+                            @Override
+                            public void operationComplete(Future<? super Void> future) {
+                                if (!future.isSuccess()) {
+                                    log.error("NAT proxy server startUp Failed ", future.cause());
+                                    started.set(false);
+                                } else {
+                                    log.info("start echo netty [NAT Proxy Server] server ,port:" + natPort);
+                                }
+                            }
+                        });
 
-                    }
-                });
-        natServerBootStrap.bind(natPort).addListener(new GenericFutureListener<Future<? super Void>>() {
-            @Override
-            public void operationComplete(Future<? super Void> future) {
-                if (!future.isSuccess()) {
-                    log.error("NAT proxy server startUp Failed ", future.cause());
-                    started.set(false);
-                } else {
-                    log.info("start echo netty [NAT Proxy Server] server ,port:" + natPort);
-                }
-            }
-        });
-
-        // third build a mapping bootstrap to open local port mapping which is used to accept server's proxy request
+        // third build a mapping bootstrap to open local port mapping which is used to accept server's
+        // proxy request
         mappingBootstrap = new ServerBootstrap();
-        serverBossGroup = new NioEventLoopGroup(
-                0,
-                new DefaultThreadFactory("NatMapping-boss-group" + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class))
-        );
-        serverWorkerGroup = new NioEventLoopGroup(
-                0,
-                new DefaultThreadFactory("NatMapping-worker-group" + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class))
-        );
-        mappingBootstrap.group(serverBossGroup, serverWorkerGroup)
+        serverBossGroup =
+                new NioEventLoopGroup(
+                        0,
+                        new DefaultThreadFactory(
+                                "NatMapping-boss-group"
+                                        + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class)));
+        serverWorkerGroup =
+                new NioEventLoopGroup(
+                        0,
+                        new DefaultThreadFactory(
+                                "NatMapping-worker-group"
+                                        + DefaultThreadFactory.toPoolName(NioEventLoopGroup.class)));
+        mappingBootstrap
+                .group(serverBossGroup, serverWorkerGroup)
                 .option(ChannelOption.SO_BACKLOG, 10)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) {
-//                        ch.pipeline().addLast("test", new testMsgHandler());
-                        ch.pipeline().addLast("decoder", new EchoPacketDecoder());
-                        ch.pipeline().addLast("encoder", new EchoPacketEncoder());
-                        ch.pipeline().addLast("handler", new MappingChannelHandler());
-                    }
-                });
+                .childHandler(
+                        new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            public void initChannel(SocketChannel ch) {
+                                //                        ch.pipeline().addLast("test", new testMsgHandler());
+                                ch.pipeline().addLast("decoder", new EchoPacketDecoder());
+                                ch.pipeline().addLast("encoder", new EchoPacketEncoder());
+                                ch.pipeline().addLast("handler", new MappingChannelHandler());
+                            }
+                        });
 
         // and finally start command http server
         configPortal = new ConfigPortal(this).startHttpServer();
         echoRemoteControlManager = new EchoRemoteControlManager(this);
 
-        //event push manager
-        eventBusManager = new EventBusManager(serverId, apiEntry)
-                .enableEventReceiveService(configPortal.getEchoHttpCommandServer())
-                .startup();
+        // event push manager
+        eventBusManager =
+                new EventBusManager(serverId, apiEntry)
+                        .enableEventReceiveService(configPortal.getEchoHttpCommandServer())
+                        .startup();
     }
 
     public ChannelFuture openMapping(Integer port) {

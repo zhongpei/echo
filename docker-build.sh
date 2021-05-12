@@ -1,3 +1,4 @@
+git pull --rebase origin master;
 #!/usr/bin/env bash
 now_dir=`pwd`
 cd `dirname $0`
@@ -5,6 +6,7 @@ cd `dirname $0`
 shell_dir=`pwd`
 
 cd ${shell_dir}
+mvn clean
 
 rm -rf echo-dist
 mkdir echo-dist
@@ -12,7 +14,7 @@ mkdir echo-dist
 
 # echo client
 cd ${shell_dir}
-./echo-client/generate-bin.sh
+./echo-client/docker-generate-bin.sh
 docker build ./echo-client -t registry.cn-beijing.aliyuncs.com/virjar/echo-client
 # docker push registry.cn-beijing.aliyuncs.com/virjar/echo-client
 echo_client_version=`cat ./echo-client/target/echo_client_version.txt`
@@ -21,7 +23,7 @@ cp ./echo-client/target/echo-client-${echo_client_version}.zip echo-dist/
 
 # echo http proxy server
 cd ${shell_dir}
-./echo-http-proxy-server/generate-bin.sh
+./echo-http-proxy-server/docker-generate-bin.sh
 docker build ./echo-http-proxy-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-http-proxy-server
 # docker push registry.cn-beijing.aliyuncs.com/virjar/echo-http-proxy-server
 echo_http_proxy_version=`cat ./echo-http-proxy-server/target/echo_http_proxy_version.txt`
@@ -30,13 +32,15 @@ cp ./echo-http-proxy-server/target/echo-http-proxy-${echo_http_proxy_version}.zi
 
 #echo nat server
 cd ${shell_dir}
-./echo-nat-server/generate-bin.sh
+./echo-nat-server/docker-generate-bin.sh
 docker build ./echo-nat-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-nat-server
 #docker push registry.cn-beijing.aliyuncs.com/virjar/echo-nat-server
 echo_nat_version=`cat ./echo-nat-server/target/echo_nat_version.txt`
 cp ./echo-nat-server/target/dist-echo-nat-${echo_nat_version}.zip echo-dist/
 
 # meta-server
+cd ${shell_dir}
+./echo-meta-server/docker-generate-bin.sh
 docker build ./echo-meta-server -t registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
 #docker push registry.cn-beijing.aliyuncs.com/virjar/echo-meta-server
 

@@ -9,7 +9,6 @@ import com.virjar.echo.nat.server.EchoServerConstant;
 import com.virjar.echo.nat.server.EchoTuningExtra;
 import com.virjar.echo.server.common.hserver.NanoUtil;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.DefaultPromise;
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -57,9 +57,7 @@ public class EchoRemoteControlManager {
     }
 
     public JSONObject sendRemoteControlMessage(String clientId, String controlAction, String additionParam) {
-
-        log.info("sendRemoteControlMessage clientId:{} controlAction:{} additionParam:{}", clientId, controlAction, additionParam);
-        EchoTuningExtra echoTuningExtra = echoNatServer.queryConnectionNode(clientId);
+        EchoTuningExtra echoTuningExtra = getEchoTuningExtra(clientId);
         if (echoTuningExtra == null) {
             log.info("client offline");
             return NanoUtil.failed(-1, "client offline");
@@ -150,6 +148,23 @@ public class EchoRemoteControlManager {
             }
         }
         return ret;
+    }
+
+    private EchoTuningExtra getEchoTuningExtra(String clientId) {
+        CompletableFuture<EchoTuningExtra> completableFuture = new CompletableFuture<>();
+        echoNatServer.queryConnectionNodeV2(clientId, value -> {
+            completableFuture.complete(value);
+        });
+
+        EchoTuningExtra echoTuningExtra = null;
+        try {
+            echoTuningExtra = completableFuture.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return echoTuningExtra;
     }
 
 

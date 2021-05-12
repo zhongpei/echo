@@ -173,9 +173,14 @@ public class EchoHttpProxyServer {
     private ProxyNode createProxyNodeFromMappingNode(NatUpstreamMeta natUpstreamMeta) {
         String clientId = natUpstreamMeta.getClientId();
         ProxyNode proxyNode = allProxyNode.get(clientId);
-        if (proxyNode != null && proxyNode.getNatUpstreamMeta() == natUpstreamMeta) {
-            log.info("client: {} online already", clientId);
-            return null;
+        if (proxyNode != null) {
+            if (proxyNode.getNatUpstreamMeta().getPort() == natUpstreamMeta.getPort()) {
+                log.info("client: {} online already,proxyNode:{}", proxyNode.getClientId(), proxyNode);
+                return null;
+            } else {
+                log.info("originPoxyNode not active, disconnect it,proxyNode:{}", proxyNode);
+                onProxyNodeDisconnect(proxyNode);
+            }
         }
         proxyNode = new ProxyNode();
         proxyNode.setClientId(clientId);

@@ -101,6 +101,7 @@ public class EventBusManager {
                 final HashMap<String, String> httpDataMap = new HashMap<String, String>();
                 httpSession.parseBody(httpDataMap);
                 String jsonContentText = httpDataMap.get("postData");
+                log.info("handle message，receive data:{}", jsonContentText);
                 ComponentEvent componentEvent = JSONObject.parseObject(jsonContentText).toJavaObject(ComponentEvent.class);
                 for (EventHandler eventHandler : eventHandlers) {
                     eventHandler.handleEvent(componentEvent);

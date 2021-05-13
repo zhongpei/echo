@@ -127,12 +127,11 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
     private void onLoseConnect(EchoTuningExtra echoTuningExtra) {
         log.info("mapping service shutdown:{}", echoTuningExtra);
-        if (echoNatServer.unregisterConnectionInfoV2(echoTuningExtra) == false) {
-            log.info("unregisterConnectionInfoV2 fail,{},skip it.", echoTuningExtra);
-            return;
-        }
+
         NettyUtils.closeChannelIfActive(echoTuningExtra.getEchoNatChannel());
         NettyUtils.closeChannelIfActive(echoTuningExtra.getMappingServerChannel());
+
+
         echoNatServer.getPortResourceManager().returnPort(echoTuningExtra.getPort());
 
 
@@ -140,11 +139,16 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
         NettyUtils.closeAll(ChannelStateManager.connectedDownStreams(echoTuningExtra.getMappingServerChannel()));
         NettyUtils.closeAll(ChannelStateManager.heartBeatChildChannel(echoTuningExtra.getMappingServerChannel()));
 
-        // notify meta server that this resource has been shutdown
-        ComponentEvent componentEvent
-                = ComponentEvent.createNatClientOfflineEvent(echoTuningExtra.toVo());
-        echoNatServer.getEventBusManager()
-                .pushEvent(componentEvent);
+        // 因为缓存问题，可能不需要移除Connection，但是现在的NAT资源要回收
+        Boolean unregisterResult = echoNatServer.unregisterConnectionInfoV2(echoTuningExtra);
+        // 移除成功才需要发出消息
+        if (unregisterResult) {
+            // notify meta server that this resource has been shutdown
+            ComponentEvent componentEvent
+                    = ComponentEvent.createNatClientOfflineEvent(echoTuningExtra.toVo());
+            echoNatServer.getEventBusManager()
+                    .pushEvent(componentEvent);
+        }
     }
 
     private void handleRegister(final ChannelHandlerContext ctx, EchoPacket msg) {

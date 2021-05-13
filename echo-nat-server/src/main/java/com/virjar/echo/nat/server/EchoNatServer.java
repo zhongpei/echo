@@ -160,11 +160,13 @@ public class EchoNatServer {
             looper.post(() -> unregisterConnectionInfo(echoTuningExtra, valueCallback));
             return;
         }
+        log.info("unregisterConnectionInfo start,{}", echoTuningExtra.getClientId());
         EchoTuningExtra remove = connectionAdditionInfoMap.get(echoTuningExtra.getClientId());
-        if (remove.getEchoNatChannel() != echoTuningExtra.getEchoNatChannel()
+        if (remove == null || remove.getEchoNatChannel() != echoTuningExtra.getEchoNatChannel()
                 || remove.getMappingServerChannel() != echoTuningExtra.getMappingServerChannel()) {
             valueCallback.onReceiveValue(false);
-            log.info("unregisterConnectionInfo ignore,echoTuningExtra natChannel is alive,echoTuningExtra:{}",echoTuningExtra);
+            log.info("unregisterConnectionInfo ignore,echoTuningExtra is alive or remove is null,echoTuningExtra:{},remove:{}",
+                    echoTuningExtra, remove);
             return;
         }
         connectionAdditionInfoMap.remove(echoTuningExtra.getClientId());

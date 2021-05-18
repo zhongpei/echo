@@ -190,6 +190,12 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
                         ctx.close();
                         return;
                     }
+                    if (!future.channel().isOpen() || !future.channel().isActive()) {
+                        log.error("can not open port mapping:{},channel is not open/Active", future.cause(), future.channel());
+                        echoNatServer.getPortResourceManager().returnPort(port);
+                        ctx.close();
+                        return;
+                    }
                     onEchoProxyServiceEstablish(future.channel(), finalAdditionAccount, finalClientId,
                             port, ctx.channel()
                     );

@@ -14,10 +14,10 @@
             <!--<pattern>%-5level %logger{36} - %msg%n</pattern>-->
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
-        <!--        &lt;!&ndash; Only log level DEBUG and above &ndash;&gt;-->
-        <!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-        <!--            <level>DEBUG</level>-->
-        <!--        </filter>-->
+<!--        &lt;!&ndash; Only log level DEBUG and above &ndash;&gt;-->
+<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+<!--            <level>DEBUG</level>-->
+<!--        </filter>-->
     </appender>
 
 

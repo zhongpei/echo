@@ -97,7 +97,7 @@
                 <configuration>
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
-                    <configurationSourceDirectory>src/main/resources-env/prod</configurationSourceDirectory>
+                    <configurationSourceDirectory>src/main/resources-env/${env}</configurationSourceDirectory>
                     <!-- Set the target configuration directory to be used in the bin scripts -->
                     <configurationDirectory>conf</configurationDirectory>
                     <!-- Copy the contents from "/src/main/config" to the target configuration

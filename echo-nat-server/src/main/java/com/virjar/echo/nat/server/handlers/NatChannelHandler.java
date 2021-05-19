@@ -127,20 +127,18 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
     private void onLoseConnect(EchoTuningExtra echoTuningExtra) {
         log.info("mapping service shutdown:{}", echoTuningExtra);
+        // 因为缓存问题，可能不需要移除Connection，但是现在的NAT资源要回收
+        Boolean unregisterResult = echoNatServer.unregisterConnectionInfoV2(echoTuningExtra);
 
         NettyUtils.closeChannelIfActive(echoTuningExtra.getEchoNatChannel());
         NettyUtils.closeChannelIfActive(echoTuningExtra.getMappingServerChannel());
 
-
         echoNatServer.getPortResourceManager().returnPort(echoTuningExtra.getPort());
-
 
         //所有的代理服务端到NatMapping端的连接
         NettyUtils.closeAll(ChannelStateManager.connectedDownStreams(echoTuningExtra.getMappingServerChannel()));
         NettyUtils.closeAll(ChannelStateManager.heartBeatChildChannel(echoTuningExtra.getMappingServerChannel()));
 
-        // 因为缓存问题，可能不需要移除Connection，但是现在的NAT资源要回收
-        Boolean unregisterResult = echoNatServer.unregisterConnectionInfoV2(echoTuningExtra);
         // 移除成功才需要发出消息
         if (unregisterResult) {
             // notify meta server that this resource has been shutdown
@@ -188,6 +186,12 @@ public class NatChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
                 .addListener((ChannelFutureListener) future -> {
                     if (!future.isSuccess()) {
                         log.error("can not open port mapping:", future.cause());
+                        echoNatServer.getPortResourceManager().returnPort(port);
+                        ctx.close();
+                        return;
+                    }
+                    if (!future.channel().isOpen() || !future.channel().isActive()) {
+                        log.error("can not open port mapping:{},channel is not open or active,channel:{}", future.cause(), future.channel());
                         echoNatServer.getPortResourceManager().returnPort(port);
                         ctx.close();
                         return;

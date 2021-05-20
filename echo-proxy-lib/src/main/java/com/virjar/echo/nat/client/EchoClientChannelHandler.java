@@ -5,13 +5,12 @@ import com.virjar.echo.nat.cmd.CmdResponse;
 import com.virjar.echo.nat.log.EchoLogger;
 import com.virjar.echo.nat.protocol.EchoPacket;
 import com.virjar.echo.nat.protocol.PacketCommon;
-
-import java.util.concurrent.TimeUnit;
-
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import java.util.concurrent.TimeUnit;
 
 public class EchoClientChannelHandler extends SimpleChannelInboundHandler<EchoPacket> {
 
@@ -75,7 +74,7 @@ public class EchoClientChannelHandler extends SimpleChannelInboundHandler<EchoPa
             @Override
             public void run() {
                 try {
-                    cmdHandler.handle(finalCmdParam, cmdResponse);
+                    cmdHandler.handle(finalCmdParam, cmdResponse, echoClient);
                 } catch (Exception e) {
                     EchoLogger.getLogger().error("failed to call cmdHandler: " + action
                             + " param->" + finalCmdParam, e);

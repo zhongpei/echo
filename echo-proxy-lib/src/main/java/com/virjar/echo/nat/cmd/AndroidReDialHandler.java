@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
+import com.virjar.echo.nat.client.EchoClient;
 import com.virjar.echo.nat.log.EchoLogger;
 
 /**
@@ -36,6 +37,11 @@ public class AndroidReDialHandler implements CmdHandler {
                 setAirplaneModeStatus(false);
             }
         }.start();
+    }
+
+    @Override
+    public void handle(String param, CmdResponse cmdResponse, EchoClient echoClient) {
+        this.handle(param, cmdResponse);
     }
 
     private void setAirplaneModeStatus(boolean open) {

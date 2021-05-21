@@ -226,12 +226,8 @@ public class EchoClient {
         natChannel.writeAndFlush(proxyMessage);
         natChannel.close();
         this.isConnecting = false;
-        for(Long seq : this.allRealServerChannels.keySet()){
-            Channel readChannel = this.allRealServerChannels.get(seq);
-            if(readChannel!=null) {
-                readChannel.close();
-                this.allRealServerChannels.remove(seq);
-            }
+        for (Long seq : this.allRealServerChannels.keySet()) {
+            this.realServerDisconnect(seq);
         }
         EchoLogger.getLogger().info("closeNatChannel finish");
     }

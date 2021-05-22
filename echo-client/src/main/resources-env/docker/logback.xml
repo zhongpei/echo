@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
 
-    <appender class="org.apache.log4j.ConsoleAppender" name="stdout">
-        <layout class="org.apache.log4j.PatternLayout">
-            <!--            <param value="%-5p (%F:%L).%M() - %m%n" name="ConversionPattern"/>-->
-            <param value="%d{ISO8601} %-5p [%t] %c{2} (%F:%L).%M() - %m%n" name="ConversionPattern"/>
-        </layout>
+
+    <!--设置命令行颜色-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%date{yyyy-MM-dd HH:mm:ss} | %magenta(%-5level) | %cyan(%thread) | %boldGreen(%logger) | %cyan(%msg%n)"/>
+
+
+    <!-- Console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder defaults to ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <encoder>
+            <!--<pattern>%-5level %logger{36} - %msg%n</pattern>-->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+<!--        &lt;!&ndash; Only log level DEBUG and above &ndash;&gt;-->
+<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+<!--            <level>DEBUG</level>-->
+<!--        </filter>-->
     </appender>
-    <logger name="org.eclipse.jetty">
-        <level value="off"/>
-    </logger>
-    <logger name="com.virjar.echo">
-        <level value="info"/>
-    </logger>
-    <root>
-        <level value="INFO"/>
-        <appender-ref ref="stdout"/>
+
+
+    <!--通过配置报名及level  可以选择去掉第三方过多的日志 -->
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
     </root>
-</log4j:configuration>
+
+</configuration>

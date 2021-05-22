@@ -1,4 +1,7 @@
-# echo
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)
+
+# echo(Distributed IP Proxy System)
+
 
 Echo是一个分布式的代理共享和管理系统，以长链接的方式连接多个运行在任意位置的终端，并将终端的网络资源整理为一套代理ip集群系统。echo提供整体的鉴权、流量监控、quota控制的功能。
 
@@ -12,16 +15,16 @@ Echo是一个分布式的代理共享和管理系统，以长链接的方式连�
 
 # 多平台镜像地址
 
-|平台|地址|备注|
-|--|--|--|
+|平台|地址|备注| 
+|--|--|--| 
 |github|https://github.com/virjar/echo/|国际|
 |gitee|https://gitee.com/virjar/echo|国内|
 |virjar|https://git.virjar.com/echo/echo|主地址|
 
 # 多项目友情链接(商务合作+v: virjar1 )
 
-|项目|介绍|地址|
-|--|--|--|
+|项目|介绍|地址| 
+|--|--|--| 
 |echo|分布式代理ip共享集群|https://git.virjar.com/echo/echo|
 |sekiro|基于长链接和代码注入的Android private API暴露框架|https://github.com/virjar/sekiro|
 |ratel|Android重打包注入引擎|https://git.virjar.com/ratel/ratel-doc|
@@ -38,7 +41,6 @@ Echo是一个分布式的代理共享和管理系统，以长链接的方式连�
 4. [服务器部署](./doc/5.server_deploy.md)
 4. [服务器Docker部署](./doc/5.server_docker_deploy.md)
 
-
 # echo子项目
 
 ## echo网站前端系统
@@ -49,13 +51,11 @@ https://github.com/virjar/echo-fe
 
 https://github.com/virjar/echo-android
 
-
 ## 请允许我打个广告赚点儿钱
 
-代理云ip推广 [http://i0k.cn/5ewVg](http://i0k.cn/5ewVg) 
+代理云ip推广 [http://i0k.cn/5ewVg](http://i0k.cn/5ewVg)
 或扫描下面二维码免费领取ip
 ![扫码领取ip](doc/img/dailiyun_ad_free_proxy.jpg)
-
 
 # 社区
 

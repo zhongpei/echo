@@ -60,4 +60,4 @@ Get [Agent Cloud IP](http://i0k.cn/5ewVg) free right now!
 
 Scanning following QR code to get more FREE agent IP！
 
-![扫码领取ip](dailiyun_ad_free_proxy.jpg)
+![扫码领取ip](doc/img/dailiyun_ad_free_proxy.jpg)

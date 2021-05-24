@@ -1,6 +1,6 @@
-# Echo
+# Echo(Distributed IP Proxy System)
 
-Echo is a distributed system used for multiple-agent sharing and management. The terminal of agent, running on multiple devices, are represented as long urls in Echo. The network resources of agents are managed by an IP cluster in Echo. Authentication, traffic monitoring, quota control  cluster are also fully supported in Echo.
+Echo is a distributed system used for IP proxy sharing and management. The terminal of agent, running on multiple devices, are represented as long urls in Echo. The network resources of agents are managed by an IP cluster in Echo. Authentication, traffic monitoring, quota control  cluster are also fully supported in Echo.
 
 ## Why Echo
 
@@ -40,6 +40,7 @@ To get more information, add wechat: virjar1
 3. [Deploy Client on PC](./doc/3.jvm_installer.md)
 4. [SDK Installing](./doc/4.sdk.md) 
 5. [Deploy Backend Server](./doc/5.server_deploy.md)
+6. [Deploy Backend Server by Docker](./doc/5.server_docker_deploy.md)
 
 ## Subitem
 

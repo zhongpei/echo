@@ -174,7 +174,9 @@ public class EchoHttpProxyServer {
         String clientId = natUpstreamMeta.getClientId();
         ProxyNode proxyNode = allProxyNode.get(clientId);
         if (proxyNode != null) {
-            if (proxyNode.getNatUpstreamMeta().getPort() == natUpstreamMeta.getPort()) {
+            if (proxyNode.getNatUpstreamMeta().getPort() == natUpstreamMeta.getPort()
+                    && proxyNode.getProxyServerChannel().isActive()
+                    && proxyNode.getNatMappingHealthChannel().isActive()) {
                 log.info("client: {} online already,proxyNode:{}", proxyNode.getClientId(), proxyNode);
                 return null;
             } else {

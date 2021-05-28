@@ -1,6 +1,6 @@
 # Echo(Distributed IP Proxy System)
 
-Echo is a distributed system used for IP proxy sharing and management. The terminal of agent, running on multiple devices, are represented as long urls in Echo. The network resources of agents are managed by an IP cluster in Echo. Authentication, traffic monitoring, quota control  cluster are also fully supported in Echo.
+Echo is a distributed system used for IP proxy sharing and management. The terminal of agent, running on multiple devices, are represented as a long connection in Echo. The network resources of agents are managed by an IP cluster in Echo. Authentication, traffic monitoring, quota control  cluster are also fully supported in Echo.
 
 ## Why Echo
 
@@ -27,7 +27,7 @@ To get more information, add wechat: virjar1
 | Name         | Description                                                  | Links                                  |
 | ------------ | ------------------------------------------------------------ | -------------------------------------- |
 | echo         | distributed cluster for agent IP sharing                     | https://git.virjar.com/echo/echo       |
-| sekiro       | Android private API exposed system based long url and code injection | https://github.com/virjar/sekiro       |
+| sekiro       | Android private API exposed system based long connection and code injection | https://github.com/virjar/sekiro       |
 | ratel        | Injection engine for Android applications' repackage.        | https://git.virjar.com/ratel/ratel-doc |
 | zelda        | An implement of App multiboxing.                             | https://github.com/virjar/zelda        |
 | geeEtacsufbo | The Extracting of "Geetest" Slider Captcha's JS Code:  **Anti-obfuscation of Control Flow Flattening JS Code**(The earliest practice of JS Control Flow's Anti-obfusecation by AST). | https://github.com/virjar              |
@@ -35,12 +35,12 @@ To get more information, add wechat: virjar1
 
 ## Content
 
-1. [Architecture](./doc/1.architecture.md)
-2. [Quick Start](./doc/2.quick_start.md)
-3. [Deploy Client on PC](./doc/3.jvm_installer.md)
-4. [SDK Installing](./doc/4.sdk.md) 
-5. [Deploy Backend Server](./doc/5.server_deploy.md)
-6. [Deploy Backend Server by Docker](./doc/5.server_docker_deploy.md)
+1. [Architecture](./doc/1.architecture.en.md)
+2. [Quick Start](./doc/2.quick_start.en.md)
+3. [Deploy Client on PC](./doc/3.jvm_installer.en.md)
+4. [SDK Installing](./doc/4.sdk.en.md) 
+5. [Deploy Backend Server](./doc/5.server_deploy.en.md)
+6. [Deploy Backend Server by Docker](./doc/5.server_docker_deploy.en.md)
 
 ## Subitem
 

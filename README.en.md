@@ -54,7 +54,7 @@ To get more information, add wechat: virjar1
 
 ## Community
 
-- github issuess or email 
+- github issues or email 
 - wechat:virjar1 
 
 > Remarking “echo入群“ when add above wechat account.

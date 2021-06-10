@@ -2,6 +2,7 @@ package com.virjar.echo.meta.server.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.virjar.echo.meta.server.entity.ClientInfo;
 import com.virjar.echo.meta.server.entity.CommonRes;
@@ -34,7 +35,7 @@ public class ClientInfoController {
     @LoginRequired(apiToken = true)
     @GetMapping("/listClientInfo")
     @ResponseBody
-    public CommonRes<Page<ClientInfo>> listClientInfo(int page, int pageSize) {
+    public CommonRes<IPage<ClientInfo>> listClientInfo(int page, int pageSize) {
         if (pageSize > 50) {
             pageSize = 50;
         }
@@ -45,7 +46,7 @@ public class ClientInfoController {
         }
 
         return CommonRes.success(clientInfoMapper.selectPage(
-                new Page<>(page, pageSize), queryWrapper
+                new Page<ClientInfo>(page, pageSize), queryWrapper
         ));
     }
 

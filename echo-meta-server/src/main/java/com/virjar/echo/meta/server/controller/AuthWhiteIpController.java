@@ -2,6 +2,7 @@ package com.virjar.echo.meta.server.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.virjar.echo.meta.server.entity.AuthWhiteIp;
 import com.virjar.echo.meta.server.entity.CommonRes;
@@ -71,7 +72,7 @@ public class AuthWhiteIpController {
     @LoginRequired(forAdmin = true)
     @ApiOperation(value = "列出所有账户的白名单出口ip，管理员使用")
     @GetMapping("/listAllAuthWhiteIp")
-    public CommonRes<Page<AuthWhiteIp>> listAllAuthWhiteIp(
+    public CommonRes<IPage<AuthWhiteIp>> listAllAuthWhiteIp(
             int page, int pageSize) {
         if (pageSize > 50) {
             pageSize = 50;
@@ -79,7 +80,7 @@ public class AuthWhiteIpController {
 
 
         return CommonRes.success(authWhiteIpMapper.selectPage(
-                new Page<>(page, pageSize), new QueryWrapper<>()
+                new Page<AuthWhiteIp>(page, pageSize), new QueryWrapper<>()
         ));
     }
 

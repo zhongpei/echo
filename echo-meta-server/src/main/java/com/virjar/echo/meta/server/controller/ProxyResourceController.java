@@ -2,6 +2,7 @@ package com.virjar.echo.meta.server.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.virjar.echo.meta.server.entity.CommonRes;
 import com.virjar.echo.meta.server.entity.ProxyResource;
@@ -41,7 +42,7 @@ public class ProxyResourceController {
     @LoginRequired(apiToken = true)
     @GetMapping("/getProxy")
     @ResponseBody
-    public CommonRes<Page<ProxyResource>> getProxy(int page, int pageSize) {
+    public CommonRes<IPage<ProxyResource>> getProxy(int page, int pageSize) {
         if (pageSize > 50) {
             pageSize = 50;
         }
@@ -51,7 +52,7 @@ public class ProxyResourceController {
             queryWrapper.eq(ProxyResource.BIND_ACCOUNT, user.getUserName());
         }
         return CommonRes.success(proxyResourceMapper.selectPage(
-                new Page<>(page, pageSize), queryWrapper
+                new Page<ProxyResource>(page, pageSize), queryWrapper
         ));
     }
 

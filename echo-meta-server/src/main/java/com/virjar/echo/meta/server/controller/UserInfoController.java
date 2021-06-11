@@ -2,6 +2,7 @@ package com.virjar.echo.meta.server.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.virjar.echo.meta.server.entity.CommonRes;
 import com.virjar.echo.meta.server.entity.UserInfo;
@@ -118,7 +119,7 @@ public class UserInfoController {
     @ApiOperation(value = "(管理员专用)用户列表")
     @LoginRequired(forAdmin = true)
     @GetMapping("/listUser")
-    public CommonRes<Page<UserInfo>> listUser(int page, int pageSize) {
+    public CommonRes<IPage<UserInfo>> listUser(int page, int pageSize) {
 //        if (pageSize > 50) {
 //            pageSize = 50;
 //        }

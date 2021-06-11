@@ -2,6 +2,7 @@ package com.virjar.echo.meta.server.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.virjar.echo.meta.server.entity.CommonRes;
 import com.virjar.echo.meta.server.entity.DownstreamServer;
@@ -53,7 +54,7 @@ public class DownstreamServerController {
     @GetMapping("/listDownstreamServer")
     @LoginRequired(forAdmin = true)
     @ResponseBody
-    public CommonRes<Page<DownstreamServer>> listDownstreamServer(
+    public CommonRes<IPage<DownstreamServer>> listDownstreamServer(
             int page, int pageSize
     ) {
         if (pageSize > 50) {

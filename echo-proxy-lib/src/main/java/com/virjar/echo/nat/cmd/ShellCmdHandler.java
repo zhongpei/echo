@@ -1,5 +1,6 @@
 package com.virjar.echo.nat.cmd;
 
+import com.virjar.echo.nat.client.EchoClient;
 import com.virjar.echo.nat.log.EchoLogger;
 
 import java.io.BufferedReader;
@@ -37,6 +38,11 @@ public class ShellCmdHandler implements CmdHandler {
             }
         }.start();
 
+    }
+
+    @Override
+    public void handle(String param, CmdResponse cmdResponse, EchoClient echoClient) {
+        this.handle(param, cmdResponse);
     }
 
     private static void autoFillOutput(InputStream inputStream, StringBuffer stringBuffer) {

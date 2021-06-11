@@ -6,27 +6,22 @@ import com.virjar.echo.nat.protocol.EchoPacket;
 import com.virjar.echo.nat.protocol.EchoPacketDecoder;
 import com.virjar.echo.nat.protocol.EchoPacketEncoder;
 import com.virjar.echo.nat.protocol.PacketCommon;
-
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class EchoClient {
 
@@ -217,6 +212,26 @@ public class EchoClient {
     private volatile boolean isConnecting = false;
 
     private Channel natChannel;
+
+    // 主动关闭掉nat channel
+    public void closeNatChannel() {
+        EchoPacket proxyMessage = new EchoPacket();
+        proxyMessage.setType(PacketCommon.TYPE_DISCONNECT);
+        proxyMessage.setExtra(clientId);
+        if (adminAccount != null && !adminAccount.trim().isEmpty()) {
+            //注册的时候，添加账户身份。这样后台标记这个客户端属于那个客户端
+            //如果没有登录，或者不设置。那么成为无用户组资源
+            proxyMessage.setData(adminAccount.getBytes(StandardCharsets.UTF_8));
+        }
+        natChannel.writeAndFlush(proxyMessage);
+        natChannel.close();
+        this.isConnecting = false;
+        this.allRealServerChannels.clear();
+//        for (Long seq : this.allRealServerChannels.keySet()) {
+//            this.realServerDisconnect(seq);
+//        }
+        EchoLogger.getLogger().info("closeNatChannel finish");
+    }
 
 
     public boolean isAlive() {
